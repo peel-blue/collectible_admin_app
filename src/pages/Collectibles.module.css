@@ -1,0 +1,349 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 32px;
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    background-color: white;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+    flex: 1;
+}
+
+.collectiblesContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0 32px 32px 32px;
+    box-sizing: border-box;
+    overflow: hidden;
+    min-width: 0;
+    background-color: #f8fafc;
+}
+
+.tableWrapper {
+    flex: 1;
+    overflow: auto;
+    border-radius: 8px;
+    background-color: white;
+    width: 100%;
+    min-width: 0;
+}
+
+.tableIcon {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tableIcon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.4);
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 18px;
+    color: #64748b;
+}
+
+.error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 18px;
+    color: #dc2626;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 32px;
+    box-sizing: border-box;
+}
+
+.collectiblesTable {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    table-layout: fixed;
+}
+
+.collectiblesTable thead {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.collectiblesTable th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.collectiblesTable th:nth-child(1) {
+    width: 80px;
+    text-align: center;
+}
+
+.collectiblesTable th:nth-child(2) {
+    width: auto;
+    min-width: 160px;
+}
+
+.collectiblesTable th:nth-child(3) {
+    width: 120px;
+    text-align: center;
+}
+
+.collectiblesTable th:nth-child(4) {
+    width: 100px;
+    text-align: center;
+}
+
+.collectiblesTable th:nth-child(5) {
+    width: 80px;
+    text-align: center;
+}
+
+.collectiblesTable th:nth-child(6) {
+    width: 80px;
+    text-align: center;
+}
+
+.collectiblesTable th:nth-child(7) {
+    width: 100px;
+    text-align: center;
+}
+
+.collectiblesTable th:nth-child(8) {
+    width: 80px;
+    text-align: center;
+}
+
+.collectiblesTable td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.collectiblesTable td:nth-child(1) {
+    text-align: center;
+}
+
+.collectiblesTable td:nth-child(2) {
+    font-weight: 500;
+}
+
+.collectiblesTable td:nth-child(3) {
+    text-align: center;
+    font-size: 13px;
+}
+
+.collectiblesTable td:nth-child(4) {
+    text-align: center;
+}
+
+.collectiblesTable td:nth-child(5) {
+    text-align: center;
+    font-weight: 600;
+}
+
+.collectiblesTable td:nth-child(6) {
+    text-align: center;
+    font-weight: 600;
+}
+
+.collectiblesTable td:nth-child(7) {
+    text-align: center;
+}
+
+.collectiblesTable td:nth-child(8) {
+    text-align: center;
+}
+
+.collectiblesTable tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.collectiblesTable tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.collectiblesTable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.imageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.collectibleImage {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid #e5e7eb;
+    transition: transform 0.2s ease;
+}
+
+.collectibleImage:hover {
+    transform: scale(1.1);
+}
+
+.actionButton {
+    background: transparent;
+    color: #3b82f6;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.actionButton:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: scale(1.1);
+}
+
+.actionButton:active {
+    transform: scale(1.05);
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statusActive {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.statusInactive {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.rarityBadge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rarityCommon {
+    background-color: #f3f4f6;
+    color: #374151;
+}
+
+.rarityUncommon {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.rarityRare {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.rarityEpic {
+    background-color: #ede9fe;
+    color: #6b21a8;
+}
+
+.rarityLegendary {
+    background-color: #fecaca;
+    color: #991b1b;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding: 16px;
+        flex-shrink: 0;
+    }
+
+    .collectiblesContainer {
+        padding: 0 16px 16px 16px;
+    }
+
+    .collectiblesTable {
+        min-width: 700px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+
+    .tableIcon {
+        align-self: flex-end;
+        padding: 10px 14px;
+        font-size: 14px;
+    }
+
+    .collectiblesTable {
+        font-size: 12px;
+    }
+
+    .collectiblesTable th,
+    .collectiblesTable td {
+        padding: 8px 12px;
+    }
+
+    .collectibleImage {
+        width: 40px;
+        height: 40px;
+    }
+}
