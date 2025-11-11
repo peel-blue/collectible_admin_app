@@ -1,9 +1,17 @@
 import api from './api';
 
 // Get all collectibles
-export const getAllCollectibles = async () => {
+export const getAllCollectibles = async (page = 1, pageSize = 15, pack_id = null) => {
     try {
-        const response = await api.get('/admin/collectibles');
+        const params = {
+            page,
+            pageSize
+        };
+        if (pack_id) {
+            params.pack_id = pack_id;
+        }
+
+        const response = await api.get('/admin/collectibles', { params });
         return response.data;
     } catch (error) {
         console.error('Error fetching collectibles:', error);
@@ -48,7 +56,7 @@ export const updateCollectible = async (id, collectibleData) => {
 // Delete collectible
 export const deleteCollectible = async (id) => {
     try {
-        const response = await api.delete(`/admin/collectibles/${id}`);
+        const response = await api.post(`/admin/delete-collectibles/${id}`);
         return response.data;
     } catch (error) {
         console.error('Error deleting collectible:', error);

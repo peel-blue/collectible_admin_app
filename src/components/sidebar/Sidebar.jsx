@@ -1,16 +1,22 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Sidebar.module.css";
 
 function Sidebar() {
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem("authToken");
+        navigate("/login");
+    };
 
     return (
         <div className={styles.sidebar}>
             <h2 className={styles['sidebar-title']}>Admin Panel</h2>
             <nav className={styles['sidebar-nav']}>
-                <Link to="/home" className={location.pathname === "/home" ? styles.active : ""}>
+                {/* <Link to="/home" className={location.pathname === "/home" ? styles.active : ""}>
                     🏠 Dashboard
-                </Link>
+                </Link> */}
                 <Link to="/users" className={location.pathname === "/users" ? styles.active : ""}>
                     👤 Users
                 </Link>
@@ -27,6 +33,11 @@ function Sidebar() {
                     ⚙️ Settings
                 </Link> */}
             </nav>
+            <div className={styles['logout-container']}>
+                <button onClick={handleLogout} className={styles['logout-button']}>
+                    Logout
+                </button>
+            </div>
         </div>
     );
 }

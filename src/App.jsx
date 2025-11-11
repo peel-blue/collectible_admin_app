@@ -5,6 +5,7 @@ import Collection from "./pages/Collection";
 import Packs from "./pages/Packs";
 import Collectibles from "./pages/Collectibles";
 import Users from "./pages/Users";
+import UserDetail from "./pages/UserDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -40,7 +41,12 @@ function App() {
             <Users />
           </ProtectedRoute>
         } />
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/users/:userId" element={
+          <ProtectedRoute>
+            <UserDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/" element={<Navigate to="/users" replace />} />
       </Routes>
     </BrowserRouter>
   );

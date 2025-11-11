@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// const URL = "https://collectible-api.bluepicks.in/api";
 const URL = "http://localhost:3000/api";
 
 const api = axios.create({
