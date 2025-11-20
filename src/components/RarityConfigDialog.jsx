@@ -66,15 +66,14 @@ const RarityConfigDialog = ({ isOpen, onClose, packId }) => {
     }, [items, values]);
 
     const handleSave = async () => {
-        setSaving(true);
         setError(null);
         // Validate that total equals exactly 100 (allow tiny float tolerance)
         const delta = Math.abs(total - 100);
         if (delta > 1e-6) {
             setError(`Total weight must equal 100. Current total: ${Number(total).toFixed(2)}`);
-            setSaving(false);
             return;
         }
+        setSaving(true);
         try {
             // Update only those with changed values; send meta_data with config
             if (packId) {
