@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from "../components/Layout";
 import PackDialog from "../components/PackDialog";
+import RarityConfigDialog from "../components/RarityConfigDialog";
 import styles from './Packs.module.css';
 import { getAllPacks, createPack, updatePack } from '../services/packApi';
 import { getAllCollections } from '../services/collectionApi';
@@ -11,6 +12,7 @@ const Packs = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [editingRarity, setEditingRarity] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
 
     useEffect(() => {
@@ -47,6 +49,10 @@ const Packs = () => {
     const handleEditPack = (item) => {
         setEditingItem(item);
         setDialogOpen(true);
+    };
+    const handleOpenPackConfig = (item) => {
+        setEditingItem(item);
+        setEditingRarity(true);
     };
 
     const handleCloseDialog = () => {
@@ -138,6 +144,13 @@ const Packs = () => {
                                         >
                                             ✏️
                                         </button>
+                                        <button
+                                            className={styles.actionButton}
+                                            onClick={() => handleOpenPackConfig(item)}
+                                            title="Pack Rarity Config"
+                                        >
+                                            ⚙️
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -152,6 +165,12 @@ const Packs = () => {
                 onSubmit={handleSavePack}
                 pack={editingItem}
                 collections={collections}
+            />
+
+            <RarityConfigDialog
+                isOpen={editingRarity}
+                onClose={() => setEditingRarity(false)}
+                packId={editingItem ? editingItem.id : null}
             />
         </Layout>
     );

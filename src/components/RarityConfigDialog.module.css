@@ -1,0 +1,168 @@
+.dialogOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.dialogContent {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative;
+    animation: slideIn 0.2s ease-out;
+    padding: 0;
+}
+
+.dialogHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-bottom: 1px solid #e5e7eb;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.dialogTitle {
+    font-size: 22px;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.form {
+    padding: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+.small {
+    width: 80px
+}
+
+.input {
+    padding: 10px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    width: 100%;
+    background: #f8fafc;
+    /* lighter background */
+    color: #374151;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.08);
+}
+
+.input::placeholder {
+    color: #9ca3af;
+}
+
+.table td,
+.table th {
+    color: #374151;
+}
+
+.loading {
+    padding: 20px;
+    color: #6b7280
+}
+
+.error {
+    padding: 20px;
+    background: #fef2f2;
+    border-radius: 6px;
+    border: 1px solid #fecaca;
+    color: #b91c1c
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #e5e7eb;
+    padding: 16px 0 0
+}
+
+.cancelButton {
+    background: #e5e7eb;
+    color: #374151;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer
+}
+
+.submitButton {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer
+}
+
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.totalRow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+    color: #374151;
+}
+
+.totalValue {
+    font-weight: 600;
+}
+
+.totalError {
+    margin-top: 8px;
+    color: #b91c1c;
+    background: #fff1f2;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #fecaca;
+}

@@ -10,7 +10,6 @@ export const getAllCollections = async () => {
     }
 };
 
-
 export const addCollection = async (collectionData) => {
     try {
         const response = await api.post("/admin/collections", collectionData);

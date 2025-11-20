@@ -187,7 +187,7 @@ const Collectibles = () => {
                             <tr>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>Pack</th>
+                                <th>Collection</th>
                                 <th>Rarity</th>
                                 <th>Total Qty</th>
                                 <th>Revealed</th>
@@ -208,7 +208,7 @@ const Collectibles = () => {
                                         </div>
                                     </td>
                                     <td>{item.name}</td>
-                                    <td>{item.pack_name || 'N/A'}</td>
+                                    <td>{item.collection_name || 'N/A'}</td>
                                     <td>
                                         <span className={`${styles.rarityBadge} ${styles[`rarity${item.rarity?.charAt(0).toUpperCase()}${item.rarity?.slice(1)}`]}`}>
                                             {item.rarity || 'Common'}

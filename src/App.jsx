@@ -6,6 +6,7 @@ import Packs from "./pages/Packs";
 import Collectibles from "./pages/Collectibles";
 import Users from "./pages/Users";
 import UserDetail from "./pages/UserDetail";
+import Rarities from "./pages/Rarities";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -34,6 +35,11 @@ function App() {
         <Route path="/collectibles" element={
           <ProtectedRoute>
             <Collectibles />
+          </ProtectedRoute>
+        } />
+        <Route path="/rarities" element={
+          <ProtectedRoute>
+            <Rarities />
           </ProtectedRoute>
         } />
         <Route path="/users" element={

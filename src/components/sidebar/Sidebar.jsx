@@ -29,6 +29,9 @@ function Sidebar() {
                 <Link to="/collectibles" className={location.pathname === "/collectibles" ? styles.active : ""}>
                     🎨 Collectibles
                 </Link>
+                <Link to="/rarities" className={location.pathname === "/rarities" ? styles.active : ""}>
+                    🏅 Rarities
+                </Link>
                 {/* <Link to="/settings" className={location.pathname === "/settings" ? styles.active : ""}>
                     ⚙️ Settings
                 </Link> */}

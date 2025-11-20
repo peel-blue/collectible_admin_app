@@ -2,30 +2,34 @@ import React, { useState, useEffect } from 'react';
 import styles from './CollectibleDialog.module.css';
 import { uploadImage } from '../../services/userAuth';
 
+import { getAllCollections } from '../../services/collectionApi';
+
 const CollectibleDialog = ({
     isOpen,
     onClose,
     onSubmit,
     collectible = null,
-    packs = []
+    // packs prop removed, collections will be fetched inside
 }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        pack_id: '',
+        collection_id: '',
         rarity: 'common',
         image: null,
         assets: {
             thumb: null
         },
         metadata: '{}',
-        status: 'active'
+        status: 'active',
+        fair_price: ''
     });
     const [imagePreview, setImagePreview] = useState(null);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [showUploadButton, setShowUploadButton] = useState(false);
+    const [collections, setCollections] = useState([]);
 
     const rarityOptions = [
         { value: 'common', label: 'Common' },
@@ -38,19 +42,30 @@ const CollectibleDialog = ({
     // Initialize form when dialog opens or collectible data changes
     useEffect(() => {
         if (isOpen) {
+            getAllCollections().then(data => {
+                setCollections(data.data || []);
+            }).catch(() => {
+                setCollections([]);
+            });
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (isOpen) {
             if (collectible) {
                 // Edit mode
                 setFormData({
                     name: collectible.name || '',
                     description: collectible.description || '',
-                    pack_id: collectible.pack_id || collectible.pack_id || '',
+                    collection_id: collectible.collection_id || '',
                     rarity: collectible.rarity || 'common',
                     image: null,
                     assets: {
                         thumb: collectible.assets?.thumb || collectible.image || null
                     },
                     metadata: JSON.stringify(collectible.meta_data || {}, null, 2),
-                    status: collectible.status || 'active'
+                    status: collectible.status || 'active',
+                    fair_price: collectible.fair_price || ''
                 });
                 setImagePreview(collectible.assets?.thumb || collectible.image || null);
             } else {
@@ -58,14 +73,15 @@ const CollectibleDialog = ({
                 setFormData({
                     name: '',
                     description: '',
-                    pack_id: '',
+                    collection_id: '',
                     rarity: 'common',
                     image: null,
                     assets: {
                         thumb: null
                     },
                     metadata: '{}',
-                    status: 'active'
+                    status: 'active',
+                    fair_price: ''
                 });
                 setImagePreview(null);
             }
@@ -180,8 +196,8 @@ const CollectibleDialog = ({
             newErrors.description = 'Description is required';
         }
 
-        if (!formData.pack_id) {
-            newErrors.pack_id = 'Pack is required';
+        if (!formData.collection_id) {
+            newErrors.collection_id = 'Collection is required';
         }
 
         if (!formData.rarity) {
@@ -199,6 +215,10 @@ const CollectibleDialog = ({
             newErrors.image = 'Image is required';
         }
 
+        // Validate fair_price (optional, but must be a number if present)
+        if (formData.fair_price !== '' && isNaN(Number(formData.fair_price))) {
+            newErrors.fair_price = 'Default Buy Pack Price must be a number';
+        }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -216,9 +236,9 @@ const CollectibleDialog = ({
             const submitData = {
                 ...formData,
                 metadata: JSON.parse(formData.metadata),
-                id: collectible?.id
+                id: collectible?.id,
+                fair_price: formData.fair_price !== '' ? Number(formData.fair_price) : undefined
             };
-
             await onSubmit(submitData);
             onClose();
         } catch (error) {
@@ -252,199 +272,72 @@ const CollectibleDialog = ({
                         ×
                     </button>
                 </div>
-
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formRow}>
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Name *
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
-                                placeholder="Enter collectible name"
-                                disabled={isSubmitting}
-                            />
+                            <label className={styles.label}>Name *</label>
+                            <input type="text" name="name" value={formData.name} onChange={handleInputChange} className={`${styles.input} ${errors.name ? styles.inputError : ''}`} placeholder="Enter collectible name" disabled={isSubmitting} />
                             {errors.name && <span className={styles.errorMessage}>{errors.name}</span>}
                         </div>
-
                         <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Pack *
-                            </label>
-                            <select
-                                name="pack_id"
-                                value={formData.pack_id}
-                                onChange={handleInputChange}
-                                className={`${styles.select} ${errors.pack_id ? styles.inputError : ''}`}
-                                disabled={isSubmitting}
-                            >
-                                <option value="">Select a pack</option>
-                                {packs.map(pack => (
-                                    <option key={pack.id} value={pack.id}>
-                                        {pack.name}
-                                    </option>
+                            <label className={styles.label}>Collection *</label>
+                            <select name="collection_id" value={formData.collection_id} onChange={handleInputChange} className={`${styles.select} ${errors.collection_id ? styles.inputError : ''}`} disabled={isSubmitting}>
+                                <option value="">Select a collection</option>
+                                {collections.map(collection => (
+                                    <option key={collection.id} value={collection.id}>{collection.name}</option>
                                 ))}
                             </select>
-                            {errors.pack_id && <span className={styles.errorMessage}>{errors.pack_id}</span>}
+                            {errors.collection_id && <span className={styles.errorMessage}>{errors.collection_id}</span>}
                         </div>
                     </div>
-
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>
-                            Description *
-                        </label>
-                        <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                            className={`${styles.textarea} ${errors.description ? styles.inputError : ''}`}
-                            placeholder="Enter collectible description"
-                            rows="3"
-                            disabled={isSubmitting}
-                        />
-                        {errors.description && <span className={styles.errorMessage}>{errors.description}</span>}
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label className={styles.label}>
-                            Rarity *
-                        </label>
-                        <select
-                            name="rarity"
-                            value={formData.rarity}
-                            onChange={handleInputChange}
-                            className={`${styles.select} ${errors.rarity ? styles.inputError : ''}`}
-                            disabled={isSubmitting}
-                        >
+                        <label className={styles.label}>Rarity *</label>
+                        <select name="rarity" value={formData.rarity} onChange={handleInputChange} className={`${styles.select} ${errors.rarity ? styles.inputError : ''}`} disabled={isSubmitting}>
                             {rarityOptions.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
+                                <option key={option.value} value={option.value}>{option.label}</option>
                             ))}
                         </select>
                         {errors.rarity && <span className={styles.errorMessage}>{errors.rarity}</span>}
                     </div>
-
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>
-                            Metadata (JSON) *
-                        </label>
-                        <textarea
-                            name="metadata"
-                            value={formData.metadata}
-                            onChange={handleInputChange}
-                            className={`${styles.textarea} ${styles.metadataTextarea} ${errors.metadata ? styles.inputError : ''}`}
-                            placeholder='{"strength": 75, "defense": 60, "magic": 40}'
-                            rows="6"
-                            disabled={isSubmitting}
-                        />
-                        {errors.metadata && <span className={styles.errorMessage}>{errors.metadata}</span>}
-                        <small className={styles.helpText}>
-                            Enter metadata as JSON format. Example: {`{"strength": 75, "defense": 60}`}
-                        </small>
+                        <label className={styles.label}>Default Buy Pack Price</label>
+                        <input type="number" name="fair_price" value={formData.fair_price} onChange={handleInputChange} className={`${styles.input} ${errors.fair_price ? styles.inputError : ''}`} placeholder="Enter default buy pack price" min="0" step="any" disabled={isSubmitting} />
+                        {errors.fair_price && <span className={styles.errorMessage}>{errors.fair_price}</span>}
                     </div>
-
                     <div className={styles.formGroup}>
-                        <label className={styles.label}>
-                            Collectible Image * (PNG, JPG, GIF - Max 10MB)
-                        </label>
+                        <label className={styles.label}>Metadata (JSON) *</label>
+                        <textarea name="metadata" value={formData.metadata} onChange={handleInputChange} className={`${styles.textarea} ${styles.metadataTextarea} ${errors.metadata ? styles.inputError : ''}`} placeholder='{"strength": 75, "defense": 60, "magic": 40}' rows="6" disabled={isSubmitting} />
+                        {errors.metadata && <span className={styles.errorMessage}>{errors.metadata}</span>}
+                        <small className={styles.helpText}>Enter metadata as JSON format. Example: {`{"strength": 75, "defense": 60}`}</small>
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Collectible Image * (PNG, JPG, GIF - Max 10MB)</label>
                         <div className={styles.imageUploadContainer}>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className={styles.fileInput}
-                                id="imageUpload"
-                                disabled={isSubmitting}
-                            />
-                            <label htmlFor="imageUpload" className={styles.fileInputLabel}>
-                                Choose Image
-                            </label>
+                            <input type="file" accept="image/*" onChange={handleImageChange} className={styles.fileInput} id="imageUpload" disabled={isSubmitting} />
+                            <label htmlFor="imageUpload" className={styles.fileInputLabel}>Choose Image</label>
                             {imagePreview && (
                                 <div className={styles.imagePreviewContainer}>
-                                    <img
-                                        src={imagePreview}
-                                        alt="Preview"
-                                        className={styles.imagePreview}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setImagePreview(null);
-                                            setFormData(prev => ({ ...prev, image: null, assets: { thumb: '' } }));
-                                            setShowUploadButton(false);
-                                        }}
-                                        className={styles.removeImageButton}
-                                        disabled={isSubmitting}
-                                    >
-                                        Remove
-                                    </button>
+                                    <img src={imagePreview} alt="Preview" className={styles.imagePreview} />
+                                    <button type="button" onClick={() => { setImagePreview(null); setFormData(prev => ({ ...prev, image: null, assets: { thumb: '' } })); setShowUploadButton(false); }} className={styles.removeImageButton} disabled={isSubmitting}>Remove</button>
                                 </div>
                             )}
                             {showUploadButton && (
-                                <button
-                                    type="button"
-                                    onClick={handleUploadImage}
-                                    className={styles.uploadButton}
-                                    disabled={isSubmitting || isUploading}
-                                >
-                                    {isUploading ? 'Uploading...' : 'Upload Image'}
-                                </button>
+                                <button type="button" onClick={handleUploadImage} className={styles.uploadButton} disabled={isSubmitting || isUploading}>{isUploading ? 'Uploading...' : 'Upload Image'}</button>
                             )}
-                            {formData.assets.thumb && (
-                                <div className={styles.uploadSuccess}>
-                                    ✅ Image uploaded successfully
-                                </div>
-                            )}
+                            {formData.assets.thumb && (<div className={styles.uploadSuccess}>✅ Image uploaded successfully</div>)}
                         </div>
                         {errors.image && <span className={styles.errorMessage}>{errors.image}</span>}
                     </div>
-
                     <div className={styles.formGroup}>
                         <label className={styles.checkboxLabel}>
-                            <input
-                                type="checkbox"
-                                name="status"
-                                checked={formData.status === 'active'}
-                                onChange={(e) => {
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        status: e.target.checked ? 'active' : 'inactive'
-                                    }));
-                                }}
-                                className={styles.checkbox}
-                                disabled={isSubmitting}
-                            />
+                            <input type="checkbox" name="status" checked={formData.status === 'active'} onChange={(e) => { setFormData(prev => ({ ...prev, status: e.target.checked ? 'active' : 'inactive' })); }} className={styles.checkbox} disabled={isSubmitting} />
                             <span className={styles.checkboxText}>Enable this collectible</span>
                         </label>
                     </div>
-
-                    {errors.submit && (
-                        <div className={styles.submitError}>
-                            {errors.submit}
-                        </div>
-                    )}
-
+                    {errors.submit && (<div className={styles.submitError}>{errors.submit}</div>)}
                     <div className={styles.formActions}>
-                        <button
-                            type="button"
-                            onClick={handleClose}
-                            className={styles.cancelButton}
-                            disabled={isSubmitting}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            className={styles.submitButton}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? 'Saving...' : (collectible ? 'Update Collectible' : 'Add Collectible')}
-                        </button>
+                        <button type="button" onClick={handleClose} className={styles.cancelButton} disabled={isSubmitting}>Cancel</button>
+                        <button type="submit" className={styles.submitButton} disabled={isSubmitting}>{isSubmitting ? 'Saving...' : (collectible ? 'Update Collectible' : 'Add Collectible')}</button>
                     </div>
                 </form>
             </div>
