@@ -48,7 +48,7 @@ export const updatePack = async (id, packData) => {
 // Delete pack
 export const deletePack = async (id) => {
     try {
-        const response = await api.delete(`/admin/packs/${id}`);
+        const response = await api.post(`/admin/delete-packs/${id}`);
         return response.data;
     } catch (error) {
         console.error('Error deleting pack:', error);

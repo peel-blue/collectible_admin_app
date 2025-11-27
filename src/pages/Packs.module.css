@@ -224,6 +224,76 @@
     transform: scale(1.05);
 }
 
+.actionCell {
+    position: relative;
+    text-align: center;
+}
+
+.menuButton {
+    background: transparent;
+    color: #6b7280;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.menuButton:hover {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: #374151;
+}
+
+.actionMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    min-width: 150px;
+    margin-top: 4px;
+}
+
+.menuItem {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    color: #374151;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.menuItem:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.menuItem:last-child {
+    border-radius: 0 0 6px 6px;
+}
+
+.menuItem:hover {
+    background-color: #f1f5f9;
+    color: #059669;
+}
+
+.menuItem:active {
+    background-color: #e0e7ff;
+}
+
 .statusBadge {
     display: inline-block;
     padding: 4px 12px;

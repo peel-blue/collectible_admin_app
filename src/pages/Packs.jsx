@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Layout from "../components/Layout";
 import PackDialog from "../components/PackDialog";
 import RarityConfigDialog from "../components/RarityConfigDialog";
+import DeleteConfirmDialog from "../components/DeleteConfirmDialog/DeleteConfirmDialog";
 import styles from './Packs.module.css';
-import { getAllPacks, createPack, updatePack } from '../services/packApi';
+import { getAllPacks, createPack, updatePack, deletePack } from '../services/packApi';
 import { getAllCollections } from '../services/collectionApi';
 
 const Packs = () => {
@@ -14,6 +15,10 @@ const Packs = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingRarity, setEditingRarity] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
+    const [openMenuId, setOpenMenuId] = useState(null);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchItems();
@@ -50,9 +55,36 @@ const Packs = () => {
         setEditingItem(item);
         setDialogOpen(true);
     };
+
     const handleOpenPackConfig = (item) => {
         setEditingItem(item);
         setEditingRarity(true);
+    };
+
+    const handleDeletePack = (item) => {
+        setItemToDelete(item);
+        setDeleteConfirmOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!itemToDelete) return;
+        setIsDeleting(true);
+        try {
+            await deletePack(itemToDelete.id);
+            await fetchItems();
+            setDeleteConfirmOpen(false);
+            setItemToDelete(null);
+        } catch (error) {
+            console.error('Error deleting pack:', error);
+            alert('Failed to delete pack');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteConfirmOpen(false);
+        setItemToDelete(null);
     };
 
     const handleCloseDialog = () => {
@@ -136,21 +168,45 @@ const Packs = () => {
                                             {item.status === 'active' ? 'Active' : 'Inactive'}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td className={styles.actionCell}>
                                         <button
-                                            className={styles.actionButton}
-                                            onClick={() => handleEditPack(item)}
-                                            title="Edit Pack"
+                                            className={styles.menuButton}
+                                            onClick={() => setOpenMenuId(openMenuId === item.id ? null : item.id)}
+                                            title="Actions"
                                         >
-                                            ✏️
+                                            ⋮
                                         </button>
-                                        <button
-                                            className={styles.actionButton}
-                                            onClick={() => handleOpenPackConfig(item)}
-                                            title="Pack Rarity Config"
-                                        >
-                                            ⚙️
-                                        </button>
+                                        {openMenuId === item.id && (
+                                            <div className={styles.actionMenu}>
+                                                <button
+                                                    className={styles.menuItem}
+                                                    onClick={() => {
+                                                        handleEditPack(item);
+                                                        setOpenMenuId(null);
+                                                    }}
+                                                >
+                                                    ✏️ Edit
+                                                </button>
+                                                <button
+                                                    className={styles.menuItem}
+                                                    onClick={() => {
+                                                        handleOpenPackConfig(item);
+                                                        setOpenMenuId(null);
+                                                    }}
+                                                >
+                                                    ⚙️ Config
+                                                </button>
+                                                <button
+                                                    className={styles.menuItem}
+                                                    onClick={() => {
+                                                        handleDeletePack(item);
+                                                        setOpenMenuId(null);
+                                                    }}
+                                                >
+                                                    🗑️ Delete
+                                                </button>
+                                            </div>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -171,6 +227,15 @@ const Packs = () => {
                 isOpen={editingRarity}
                 onClose={() => setEditingRarity(false)}
                 packId={editingItem ? editingItem.id : null}
+            />
+
+            <DeleteConfirmDialog
+                isOpen={deleteConfirmOpen}
+                title="Delete Pack"
+                message={itemToDelete ? `Are you sure you want to delete "${itemToDelete.name}"?` : ''}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+                isDeleting={isDeleting}
             />
         </Layout>
     );
