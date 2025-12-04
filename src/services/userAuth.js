@@ -27,9 +27,9 @@ export const uploadImage = async (imageFile) => {
     }
 };
 
-export const getUsers = async () => {
+export const getUsers = async (page = 1, pageSize = 10) => {
     try {
-        const response = await api.get("/admin/users");
+        const response = await api.get(`/admin/users?page=${page}&limit=${pageSize}`);
         return response.data;
     } catch (error) {
         console.error("Error fetching users:", error);

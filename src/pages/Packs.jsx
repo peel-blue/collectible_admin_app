@@ -19,6 +19,7 @@ const Packs = () => {
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState(null);
 
     useEffect(() => {
         fetchItems();
@@ -64,11 +65,13 @@ const Packs = () => {
     const handleDeletePack = (item) => {
         setItemToDelete(item);
         setDeleteConfirmOpen(true);
+        setDeleteError(null);
     };
 
     const handleConfirmDelete = async () => {
         if (!itemToDelete) return;
         setIsDeleting(true);
+        setDeleteError(null);
         try {
             await deletePack(itemToDelete.id);
             await fetchItems();
@@ -76,7 +79,8 @@ const Packs = () => {
             setItemToDelete(null);
         } catch (error) {
             console.error('Error deleting pack:', error);
-            alert('Failed to delete pack');
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to delete pack';
+            setDeleteError(errorMessage);
         } finally {
             setIsDeleting(false);
         }
@@ -85,6 +89,7 @@ const Packs = () => {
     const handleCancelDelete = () => {
         setDeleteConfirmOpen(false);
         setItemToDelete(null);
+        setDeleteError(null);
     };
 
     const handleCloseDialog = () => {
@@ -138,7 +143,7 @@ const Packs = () => {
                     title="Add Pack"
                     onClick={handleAddPack}
                 >
-                    ➕
+                    Add Pack
                 </button>
             </div>
             <div className={styles.packsContainer}>
@@ -236,6 +241,7 @@ const Packs = () => {
                 onConfirm={handleConfirmDelete}
                 onCancel={handleCancelDelete}
                 isDeleting={isDeleting}
+                error={deleteError}
             />
         </Layout>
     );

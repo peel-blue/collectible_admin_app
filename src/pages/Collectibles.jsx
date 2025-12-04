@@ -176,7 +176,7 @@ const Collectibles = () => {
                         title="Add Collectible"
                         onClick={handleAddCollectible}
                     >
-                        ➕
+                        Add Collectible
                     </button>
                 </div>
             </div>

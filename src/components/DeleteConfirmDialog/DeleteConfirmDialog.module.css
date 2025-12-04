@@ -91,3 +91,14 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.errorMessage {
+    font-size: 14px;
+    color: #dc2626;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}

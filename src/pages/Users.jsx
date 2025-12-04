@@ -9,17 +9,24 @@ const Users = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalUsers, setTotalUsers] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
 
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        fetchUsers(currentPage);
+    }, [currentPage]);
 
-    const fetchUsers = async () => {
+    const fetchUsers = async (page = 1) => {
         try {
             setLoading(true);
-            const data = await getUsers();
+            const data = await getUsers(page);
             console.log("Fetched users:", data);
             setUsers(data.data.items);
+            setTotalPages(data.data.totalPages || 1);
+            setTotalUsers(data.data.total || 0);
+            setPageSize(data.data.limit || 10);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -40,7 +47,13 @@ const Users = () => {
 
     const handleViewUser = (userId) => {
         navigate(`/users/${userId}`);
-    }; if (loading) {
+    };
+
+    // Calculate display range for pagination info
+    const startIndex = (currentPage - 1) * pageSize + 1;
+    const endIndex = Math.min(currentPage * pageSize, totalUsers);
+
+    if (loading) {
         return (
             <Layout>
                 <div className={styles.container}>
@@ -66,7 +79,7 @@ const Users = () => {
                 <div className={styles.header}>
                     <h1 className={styles.title}>Users</h1>
                     <div className={styles.userCount}>
-                        Total Users: {users.length}
+                        Total Users: {totalUsers}
                     </div>
                 </div>
 
@@ -76,6 +89,7 @@ const Users = () => {
                             <tr>
                                 <th>ID</th>
                                 <th>Email</th>
+                                <th>Mobile Number</th>
                                 <th>Created Date</th>
                                 <th>Action</th>
                             </tr>
@@ -86,6 +100,7 @@ const Users = () => {
                                     <tr key={user.id}>
                                         <td>{user.id}</td>
                                         <td>{user.email || 'N/A'}</td>
+                                        <td>{user.phone_number || 'N/A'}</td>
                                         <td>{formatDate(user.created)}</td>
                                         <td>
                                             <button
@@ -100,13 +115,46 @@ const Users = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="4" className={styles.noData}>
+                                    <td colSpan="5" className={styles.noData}>
                                         No users found
                                     </td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                <div className={styles.paginationContainer}>
+                    <div className={styles.paginationInfo}>
+                        Showing {startIndex}-{endIndex} of {totalUsers}
+                    </div>
+                    <div className={styles.paginationControls}>
+                        <button
+                            className={styles.paginationButton}
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                        >
+                            ← Previous
+                        </button>
+                        <div className={styles.pageNumbers}>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                                <button
+                                    key={page}
+                                    className={`${styles.pageButton} ${currentPage === page ? styles.pageButtonActive : ''}`}
+                                    onClick={() => setCurrentPage(page)}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
+                        <button
+                            className={styles.paginationButton}
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next →
+                        </button>
+                    </div>
                 </div>
             </div>
         </Layout>

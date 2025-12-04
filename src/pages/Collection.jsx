@@ -91,7 +91,7 @@ const Collection = () => {
                     title="Add Collection"
                     onClick={handleAddCollection}
                 >
-                    ➕
+                    Add Collection
                 </button>
             </div>
             <div className={styles.collectionContainer}>

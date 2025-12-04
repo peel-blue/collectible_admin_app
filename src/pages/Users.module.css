@@ -38,10 +38,11 @@
 
 .tableContainer {
     flex: 1;
-    padding: 0 32px 32px 32px;
+    padding: 0 32px 0 32px;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow-y: auto;
     min-width: 0;
+    margin-bottom: 0;
 }
 
 .table {
@@ -80,11 +81,16 @@
 }
 
 .table th:nth-child(3) {
-    width: 200px;
+    width: 180px;
     text-align: center;
 }
 
 .table th:nth-child(4) {
+    width: 200px;
+    text-align: center;
+}
+
+.table th:nth-child(5) {
     width: 100px;
     text-align: center;
 }
@@ -115,6 +121,12 @@
 }
 
 .table td:nth-child(4) {
+    text-align: center;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.table td:nth-child(5) {
     text-align: right;
     padding-right: 20px;
 }
@@ -247,4 +259,83 @@
 .actionButton:hover {
     color: #1e40af;
     transform: translateX(2px);
+}
+
+.paginationContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 32px;
+    background-color: white;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+}
+
+.paginationInfo {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.paginationButton {
+    padding: 8px 16px;
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.paginationButton:hover:not(:disabled) {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+.paginationButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pageNumbers {
+    display: flex;
+    gap: 4px;
+}
+
+.pageButton {
+    padding: 6px 12px;
+    background-color: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.pageButton:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.pageButtonActive {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white;
+    border-color: #1e40af;
+    font-weight: 600;
+}
+
+.pageButtonActive:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
 }

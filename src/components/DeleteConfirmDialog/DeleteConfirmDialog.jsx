@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './DeleteConfirmDialog.module.css';
 
-const DeleteConfirmDialog = ({ isOpen, title = 'Delete Item', message, onConfirm, onCancel, isDeleting = false }) => {
+const DeleteConfirmDialog = ({ isOpen, title = 'Delete Item', message, onConfirm, onCancel, isDeleting = false, error = null }) => {
     if (!isOpen) return null;
 
     return (
@@ -9,7 +9,8 @@ const DeleteConfirmDialog = ({ isOpen, title = 'Delete Item', message, onConfirm
             <div className={styles.dialog} onClick={e => e.stopPropagation()}>
                 <h2 className={styles.title}>{title}</h2>
                 <p className={styles.message}>{message}</p>
-                <p className={styles.warning}>This action cannot be undone.</p>
+                {!error && <p className={styles.warning}>This action cannot be undone.</p>}
+                {error && <p className={styles.errorMessage}>{error}</p>}
                 <div className={styles.actions}>
                     <button
                         className={styles.cancelButton}
@@ -18,13 +19,15 @@ const DeleteConfirmDialog = ({ isOpen, title = 'Delete Item', message, onConfirm
                     >
                         Cancel
                     </button>
-                    <button
-                        className={styles.deleteButton}
-                        onClick={onConfirm}
-                        disabled={isDeleting}
-                    >
-                        {isDeleting ? 'Deleting...' : 'Delete'}
-                    </button>
+                    {!error && (
+                        <button
+                            className={styles.deleteButton}
+                            onClick={onConfirm}
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? 'Deleting...' : 'Delete'}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
