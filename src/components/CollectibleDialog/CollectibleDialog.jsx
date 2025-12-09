@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CollectibleDialog.module.css';
 import { uploadImage } from '../../services/userAuth';
-
 import { getAllCollections } from '../../services/collectionApi';
+import { getRarities } from '../../services/rarityApi';
 
 const CollectibleDialog = ({
     isOpen,
@@ -15,7 +15,7 @@ const CollectibleDialog = ({
         name: '',
         description: '',
         collection_id: '',
-        rarity: 'common',
+        rarity: 'Common',
         image: null,
         assets: {
             thumb: null
@@ -30,14 +30,7 @@ const CollectibleDialog = ({
     const [isUploading, setIsUploading] = useState(false);
     const [showUploadButton, setShowUploadButton] = useState(false);
     const [collections, setCollections] = useState([]);
-
-    const rarityOptions = [
-        { value: 'common', label: 'Common' },
-        { value: 'uncommon', label: 'Uncommon' },
-        { value: 'rare', label: 'Rare' },
-        { value: 'epic', label: 'Epic' },
-        { value: 'legendary', label: 'Legendary' }
-    ];
+    const [rarities, setRarities] = useState([]);
 
     // Initialize form when dialog opens or collectible data changes
     useEffect(() => {
@@ -46,6 +39,17 @@ const CollectibleDialog = ({
                 setCollections(data.data || []);
             }).catch(() => {
                 setCollections([]);
+            });
+
+            getRarities().then(data => {
+                const rarityList = (data.data || []).map(rarity => ({
+                    value: rarity.name,
+                    label: rarity.name,
+                    id: rarity.id
+                }));
+                setRarities(rarityList);
+            }).catch(() => {
+                setRarities([]);
             });
         }
     }, [isOpen]);
@@ -58,7 +62,7 @@ const CollectibleDialog = ({
                     name: collectible.name || '',
                     description: collectible.description || '',
                     collection_id: collectible.collection_id || '',
-                    rarity: collectible.rarity || 'common',
+                    rarity: collectible.rarity || 'Common',
                     image: null,
                     assets: {
                         thumb: collectible.assets?.thumb || collectible.image || null
@@ -74,7 +78,7 @@ const CollectibleDialog = ({
                     name: '',
                     description: '',
                     collection_id: '',
-                    rarity: 'common',
+                    rarity: 'Common',
                     image: null,
                     assets: {
                         thumb: null
@@ -293,7 +297,8 @@ const CollectibleDialog = ({
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Rarity *</label>
                         <select name="rarity" value={formData.rarity} onChange={handleInputChange} className={`${styles.select} ${errors.rarity ? styles.inputError : ''}`} disabled={isSubmitting}>
-                            {rarityOptions.map(option => (
+                            <option value="">Select a rarity</option>
+                            {rarities.map(option => (
                                 <option key={option.value} value={option.value}>{option.label}</option>
                             ))}
                         </select>
