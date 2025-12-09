@@ -1,14 +1,14 @@
 import api from './api';
 
 // Get all collectibles
-export const getAllCollectibles = async (page = 1, pageSize = 15, pack_id = null) => {
+export const getAllCollectibles = async (page = 1, pageSize = 15, collection_id = null) => {
     try {
         const params = {
             page,
             pageSize
         };
-        if (pack_id) {
-            params.pack_id = pack_id;
+        if (collection_id) {
+            params.collection_id = collection_id;
         }
 
         const response = await api.get('/admin/collectibles', { params });

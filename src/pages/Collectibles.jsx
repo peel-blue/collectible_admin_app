@@ -3,30 +3,32 @@ import Layout from "../components/Layout";
 import CollectibleDialog from "../components/CollectibleDialog";
 import styles from './Collectibles.module.css';
 import { getAllCollectibles, createCollectible, updateCollectible, deleteCollectible } from '../services/collectibleApi';
-import { getAllPacks } from '../services/packApi';
+import { getAllCollections } from '../services/collectionApi';
 
 const Collectibles = () => {
     const [items, setItems] = useState([]);
-    const [packs, setPacks] = useState([]);
+    const [collections, setCollections] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
-    const [selectedPackId, setSelectedPackId] = useState('');
+    const [selectedCollectionId, setSelectedCollectionId] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [totalItems, setTotalItems] = useState(0);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const pageSize = 10;
 
-    const fetchItems = useCallback(async (page = 1, packId = selectedPackId) => {
+    const fetchItems = useCallback(async (page = 1, collectionId = selectedCollectionId) => {
         try {
             setLoading(true);
             // Ensure empty string is converted to null
-            const packFilter = packId === '' ? null : packId;
-            console.log('Fetching items with:', { page, pageSize, packFilter }); // Debug log
-            const data = await getAllCollectibles(page, pageSize, packFilter);
+            const collectionFilter = collectionId === '' ? null : collectionId;
+            console.log('Fetching items with:', { page, pageSize, collectionFilter }); // Debug log
+            const data = await getAllCollectibles(page, pageSize, collectionFilter);
             setItems(data.data.items);
             setTotalPages(data.data.totalPages);
             setTotalItems(data.data.total);
@@ -36,20 +38,20 @@ const Collectibles = () => {
         } finally {
             setLoading(false);
         }
-    }, [selectedPackId, pageSize]);
+    }, [selectedCollectionId, pageSize]);
 
     useEffect(() => {
         fetchItems();
-        fetchPacks();
+        fetchCollections();
     }, [fetchItems]);
 
-    const fetchPacks = async () => {
+    const fetchCollections = async () => {
         try {
-            const data = await getAllPacks();
-            console.log('Fetched packs:', data); // Debug log
-            setPacks(data.data.items);
+            const data = await getAllCollections();
+            console.log('Fetched collections:', data); // Debug log
+            setCollections(data.data);
         } catch (err) {
-            console.error('Error fetching packs:', err);
+            console.error('Error fetching collections:', err);
         }
     };
 
@@ -82,7 +84,7 @@ const Collectibles = () => {
             }
 
             // Refresh the list
-            await fetchItems(currentPage, selectedPackId);
+            await fetchItems(currentPage, selectedCollectionId);
 
             // Close dialog
             handleCloseDialog();
@@ -93,17 +95,17 @@ const Collectibles = () => {
         }
     };
 
-    const handlePackFilterChange = (event) => {
-        const packId = event.target.value;
-        console.log('Pack filter changed to:', packId); // Debug log
-        setSelectedPackId(packId);
+    const handleCollectionFilterChange = (event) => {
+        const collectionId = event.target.value;
+        console.log('Collection filter changed to:', collectionId); // Debug log
+        setSelectedCollectionId(collectionId);
         setCurrentPage(1); // Reset to first page when filter changes
-        fetchItems(1, packId || null);
+        fetchItems(1, collectionId || null);
     };
 
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= totalPages) {
-            fetchItems(newPage, selectedPackId);
+            fetchItems(newPage, selectedCollectionId);
         }
     };
 
@@ -122,24 +124,46 @@ const Collectibles = () => {
     const handleDeleteClick = (item) => {
         setItemToDelete(item);
         setDeleteConfirmOpen(true);
+        setDeleteError(null);
     };
 
     const handleDeleteConfirm = async () => {
+        setIsDeleting(true);
+        setDeleteError(null);
         try {
-            await deleteCollectible(itemToDelete.id);
-            setDeleteConfirmOpen(false);
-            setItemToDelete(null);
-            // Refresh the list
-            await fetchItems(currentPage, selectedPackId);
+            const response = await deleteCollectible(itemToDelete.id);
+
+            // Check if response status is true (success) or false (error)
+            if (response.status === true) {
+                // Success case
+                const successMessage = response.message || 'Collectible deleted successfully';
+                setDeleteError({ message: successMessage, type: 'success' });
+                // Refresh the list after a short delay to show the success message
+                setTimeout(async () => {
+                    await fetchItems(currentPage, selectedCollectionId);
+                    setDeleteConfirmOpen(false);
+                    setItemToDelete(null);
+                    setDeleteError(null);
+                }, 1500);
+            } else {
+                // Error case - status is false
+                const errorMessage = response.message || 'Failed to delete collectible';
+                setDeleteError({ message: errorMessage, type: 'error' });
+            }
         } catch (error) {
             console.error('Error deleting collectible:', error);
-            // Keep dialog open on error
+            // Extract error message from API response
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to delete collectible';
+            setDeleteError({ message: errorMessage, type: 'error' });
+        } finally {
+            setIsDeleting(false);
         }
     };
 
     const handleDeleteCancel = () => {
         setDeleteConfirmOpen(false);
         setItemToDelete(null);
+        setDeleteError(null);
     };
 
     if (loading) return (
@@ -160,14 +184,14 @@ const Collectibles = () => {
                 <h1 className={styles.title}>Collectibles</h1>
                 <div className={styles.headerControls}>
                     <select
-                        value={selectedPackId}
-                        onChange={handlePackFilterChange}
+                        value={selectedCollectionId}
+                        onChange={handleCollectionFilterChange}
                         className={styles.packFilter}
                     >
-                        <option value="">All Packs</option>
-                        {packs.map((pack) => (
-                            <option key={pack.id} value={pack.id}>
-                                {pack.name}
+                        <option value="">All Collections</option>
+                        {collections.map((collection) => (
+                            <option key={collection.id} value={collection.id}>
+                                {collection.name}
                             </option>
                         ))}
                     </select>
@@ -243,6 +267,11 @@ const Collectibles = () => {
                             ))}
                         </tbody>
                     </table>
+                    {items.length === 0 && (
+                        <div className={styles.noDataMessage}>
+                            <p>No data found</p>
+                        </div>
+                    )}
                 </div>
 
                 {totalPages > 1 && (
@@ -280,7 +309,6 @@ const Collectibles = () => {
                 onClose={handleCloseDialog}
                 onSubmit={handleSaveCollectible}
                 collectible={editingItem}
-                packs={packs}
             />
 
             {/* Delete Confirmation Dialog */}
@@ -289,20 +317,29 @@ const Collectibles = () => {
                     <div className={styles.deleteConfirmContent}>
                         <h3>Delete Collectible</h3>
                         <p>Are you sure you want to delete "{itemToDelete?.name}"?</p>
-                        <p>This action cannot be undone.</p>
+                        {!deleteError && <p>This action cannot be undone.</p>}
+                        {deleteError && (
+                            <div className={`${styles.deleteMessage} ${deleteError.type === 'success' ? styles.deleteMessageSuccess : styles.deleteMessageError}`}>
+                                {deleteError.message}
+                            </div>
+                        )}
                         <div className={styles.deleteConfirmActions}>
                             <button
                                 className={styles.deleteConfirmCancel}
                                 onClick={handleDeleteCancel}
+                                disabled={isDeleting}
                             >
-                                Cancel
+                                {deleteError?.type === 'success' ? 'Close' : 'Cancel'}
                             </button>
-                            <button
-                                className={styles.deleteConfirmProceed}
-                                onClick={handleDeleteConfirm}
-                            >
-                                Delete
-                            </button>
+                            {!deleteError && (
+                                <button
+                                    className={styles.deleteConfirmProceed}
+                                    onClick={handleDeleteConfirm}
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? 'Deleting...' : 'Delete'}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
