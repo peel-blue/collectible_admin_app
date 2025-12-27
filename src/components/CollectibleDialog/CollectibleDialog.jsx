@@ -215,8 +215,8 @@ const CollectibleDialog = ({
             newErrors.metadata = 'Metadata must be valid JSON';
         }
 
-        if (!collectible && !formData.image) {
-            newErrors.image = 'Image is required';
+        if (!collectible && !formData.assets.thumb) {
+            newErrors.image = 'Image is required (must be uploaded)';
         }
 
         // Validate fair_price (optional, but must be a number if present)
@@ -237,10 +237,13 @@ const CollectibleDialog = ({
         setIsSubmitting(true);
 
         try {
+            // Remove the image file object, only send the thumbnail URL
+            const { image: _image, ...dataWithoutFile } = formData;
+
             const submitData = {
-                ...formData,
+                ...dataWithoutFile,
                 metadata: JSON.parse(formData.metadata),
-                id: collectible?.id,
+                rarity: formData.rarity.toLowerCase(),
                 fair_price: formData.fair_price !== '' ? Number(formData.fair_price) : undefined
             };
             await onSubmit(submitData);
@@ -293,6 +296,11 @@ const CollectibleDialog = ({
                             </select>
                             {errors.collection_id && <span className={styles.errorMessage}>{errors.collection_id}</span>}
                         </div>
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label className={styles.label}>Description *</label>
+                        <textarea name="description" value={formData.description} onChange={handleInputChange} className={`${styles.textarea} ${errors.description ? styles.inputError : ''}`} placeholder="Enter collectible description" rows="3" disabled={isSubmitting} />
+                        {errors.description && <span className={styles.errorMessage}>{errors.description}</span>}
                     </div>
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Rarity *</label>

@@ -47,14 +47,20 @@ const Collection = () => {
     const handleSaveCollection = async (formData) => {
         try {
             setDialogLoading(true);
+            // Prepare payload with only required fields: name, description, image_url
+            const payload = {
+                name: formData.name,
+                description: formData.description,
+                image_url: formData.iconUrl
+            };
 
             // TODO: Implement API calls for create/update
             if (editingItem) {
                 // Update existing collection
-                await updateCollection(editingItem.id, formData);
+                await updateCollection(editingItem.id, payload);
             } else {
                 // Create new collection
-                await addCollection(formData);
+                await addCollection(payload);
             }
 
             // Refresh the list

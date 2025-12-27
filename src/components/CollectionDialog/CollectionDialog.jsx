@@ -13,7 +13,7 @@ const CollectionDialog = ({
         name: '',
         description: '',
         icon: null,
-        image_url: '',
+        iconUrl: '',
         is_active: true
     });
     const [iconPreview, setIconPreview] = useState(null);
@@ -123,7 +123,7 @@ const CollectionDialog = ({
 
             setFormData(prev => ({
                 ...prev,
-                image_url: imageUrl
+                iconUrl: imageUrl
             }));
 
             setShowUploadButton(false);
