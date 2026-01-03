@@ -32,6 +32,9 @@ function Sidebar() {
                 <Link to="/rarities" className={location.pathname === "/rarities" ? styles.active : ""}>
                     🏅 Rarities
                 </Link>
+                <Link to="/config" className={location.pathname === "/config" ? styles.active : ""}>
+                    ⚙️ Config
+                </Link>
                 {/* <Link to="/settings" className={location.pathname === "/settings" ? styles.active : ""}>
                     ⚙️ Settings
                 </Link> */}

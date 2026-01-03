@@ -7,6 +7,7 @@ import Collectibles from "./pages/Collectibles";
 import Users from "./pages/Users";
 import UserDetail from "./pages/UserDetail";
 import Rarities from "./pages/Rarities";
+import Config from "./pages/Config";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -40,6 +41,11 @@ function App() {
         <Route path="/rarities" element={
           <ProtectedRoute>
             <Rarities />
+          </ProtectedRoute>
+        } />
+        <Route path="/config" element={
+          <ProtectedRoute>
+            <Config />
           </ProtectedRoute>
         } />
         <Route path="/users" element={
